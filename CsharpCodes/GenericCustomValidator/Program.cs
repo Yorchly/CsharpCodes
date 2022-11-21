@@ -41,15 +41,15 @@ public class CustomValidator<T1, T2>
 {
     private readonly T1 _firstInstance;
     private readonly T2 _secondInstance;
-    private readonly List<bool> isValid = new();
+    private bool isValid = true;
 
     public CustomValidator(T1 instance1, T2 instance2)
     {
         if (instance1 is null)
-            throw new ArgumentException("Instance 1 cannot be null");
+            throw new ArgumentNullException(nameof(instance1));
 
         if (instance2 is null)
-            throw new ArgumentException("Instance 2 cannot be null");
+            throw new ArgumentNullException(nameof(instance2));
 
         _firstInstance = instance1;
         _secondInstance = instance2;
@@ -59,15 +59,18 @@ public class CustomValidator<T1, T2>
         Func<T2, TProperty> secondProperty
     )
     {
+        if (!isValid)
+            return this;
+
         if (firstProperty is null)
-            throw new ArgumentException("First property cannot be null");
+            throw new ArgumentNullException(nameof(firstProperty));
         if (secondProperty is null)
-            throw new ArgumentException("Second property cannot be null");
+            throw new ArgumentNullException(nameof(secondProperty));
 
         TProperty prop1Value = firstProperty.Invoke(_firstInstance);
         TProperty prop2Value = secondProperty.Invoke(_secondInstance);
 
-        isValid.Add(prop1Value.Equals(prop2Value));
+        isValid = prop1Value.Equals(prop2Value);
 
         return this;
     }
@@ -77,6 +80,9 @@ public class CustomValidator<T1, T2>
         Func<T2, IEnumerable<TProperty>> secondProperty
     )
     {
+        if (!isValid)
+            return this;
+
         if (firstProperty is null)
             throw new ArgumentException("First property cannot be null");
         if (secondProperty is null)
@@ -86,18 +92,17 @@ public class CustomValidator<T1, T2>
         TProperty[] prop2Value = secondProperty.Invoke(_secondInstance).ToArray();
 
         if (prop1Value.Length != prop2Value.Length)
-            isValid.Add(false);
+            isValid = false;
 
         for(int i = 0; i < prop1Value.Length; i++)
             if (!prop1Value[i].Equals(prop2Value[i]))
             {
-                isValid.Add(false);
+                isValid = false;
                 break;
             }
 
         return this;
     }
 
-    public bool Isvalid() =>
-        isValid.All(element => element is true);
+    public bool Isvalid() => isValid;
 }
