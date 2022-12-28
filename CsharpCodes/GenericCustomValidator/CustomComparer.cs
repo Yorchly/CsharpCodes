@@ -1,72 +1,97 @@
-﻿namespace GenericCustomComparer
+﻿using System.Linq.Expressions;
+
+namespace GenericCustomComparer;
+
+public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
 {
-    public class CustomComparer<T1, T2>
+    public bool IsValid 
+    { 
+        get
+        {
+            CheckInstances();
+
+            return _isValid;
+        }
+        private set => _isValid = value; 
+    }
+
+    private T1 _firstInstance;
+    private T2 _secondInstance;
+    private bool _isValid = true;
+
+    public void SetInstances(T1 firstInstance, T2 secondInstance)
     {
-        private readonly T1 _firstInstance;
-        private readonly T2 _secondInstance;
-        private bool isValid = true;
+        if (firstInstance is null)
+            throw new ArgumentNullException(nameof(firstInstance));
 
-        public CustomComparer(T1 instance1, T2 instance2)
-        {
-            if (instance1 is null)
-                throw new ArgumentNullException(nameof(instance1));
+        if (secondInstance is null)
+            throw new ArgumentNullException(nameof(secondInstance));
 
-            if (instance2 is null)
-                throw new ArgumentNullException(nameof(instance2));
+        _firstInstance = firstInstance;
+        _secondInstance = secondInstance;
+    }
 
-            _firstInstance = instance1;
-            _secondInstance = instance2;
-        }
-        public CustomComparer<T1, T2> AreEqual<TProperty>(
-            Func<T1, TProperty> firstProperty,
-            Func<T2, TProperty> secondProperty
-        )
-        {
-            if (!isValid)
-                return this;
+    public ICustomComparer<T1, T2> AreEqual<TProperty>(
+        Expression<Func<T1, TProperty>> firstProperty,
+        Expression<Func<T2, TProperty>> secondProperty
+    )
+    {
+        CheckInstances();
 
-            if (firstProperty is null)
-                throw new ArgumentNullException(nameof(firstProperty));
-            if (secondProperty is null)
-                throw new ArgumentNullException(nameof(secondProperty));
-
-            TProperty prop1Value = firstProperty.Invoke(_firstInstance);
-            TProperty prop2Value = secondProperty.Invoke(_secondInstance);
-
-            isValid = prop1Value.Equals(prop2Value);
-
+        if (!IsValid)
             return this;
-        }
+        if (firstProperty is null)
+            throw new ArgumentNullException(nameof(firstProperty));
+        if (secondProperty is null)
+            throw new ArgumentNullException(nameof(secondProperty));
 
-        public CustomComparer<T1, T2> AreEqualIEnumerable<TProperty>(
-            Func<T1, IEnumerable<TProperty>> firstProperty,
-            Func<T2, IEnumerable<TProperty>> secondProperty
-        )
-        {
-            if (!isValid)
-                return this;
+        TProperty prop1Value = firstProperty
+            .Compile().Invoke(_firstInstance);
+        TProperty prop2Value = secondProperty
+            .Compile().Invoke(_secondInstance);
 
-            if (firstProperty is null)
-                throw new ArgumentException("First property cannot be null");
-            if (secondProperty is null)
-                throw new ArgumentException("Second property cannot be null");
+        IsValid = prop1Value.Equals(prop2Value);
 
-            TProperty[] prop1Value = firstProperty.Invoke(_firstInstance).ToArray();
-            TProperty[] prop2Value = secondProperty.Invoke(_secondInstance).ToArray();
+        return this;
+    }
 
-            if (prop1Value.Length != prop2Value.Length)
-                isValid = false;
+    public void CheckInstances()
+    {
+        if (_firstInstance is null || _secondInstance is null)
+            throw new ArgumentNullException(
+                "Instances are null, you must call first SetInstances method"
+            );
+    }
 
-            for (int i = 0; i < prop1Value.Length; i++)
-                if (!prop1Value[i].Equals(prop2Value[i]))
-                {
-                    isValid = false;
-                    break;
-                }
+    public ICustomComparer<T1, T2> AreEqualIEnumerable<TProperty>(
+        Expression<Func<T1, IEnumerable<TProperty>>> firstProperty,
+        Expression<Func<T2, IEnumerable<TProperty>>> secondProperty
+    )
+    {
+        CheckInstances();
 
+        if (!IsValid)
             return this;
-        }
+        if (firstProperty is null)
+            throw new ArgumentException("First property cannot be null");
+        if (secondProperty is null)
+            throw new ArgumentException("Second property cannot be null");
 
-        public bool Isvalid() => isValid;
+        TProperty[] prop1Value = firstProperty
+            .Compile().Invoke(_firstInstance).ToArray();
+        TProperty[] prop2Value = secondProperty
+            .Compile().Invoke(_secondInstance).ToArray();
+
+        if (prop1Value.Length != prop2Value.Length)
+            IsValid = false;
+
+        for (int i = 0; i < prop1Value.Length; i++)
+            if (!prop1Value[i].Equals(prop2Value[i]))
+            {
+                IsValid = false;
+                break;
+            }
+
+        return this;
     }
 }
