@@ -32,25 +32,31 @@ public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
     }
 
     public ICustomComparer<T1, T2> AreEqual<TProperty>(
-        Expression<Func<T1, TProperty>> firstProperty,
-        Expression<Func<T2, TProperty>> secondProperty
+        Expression<Func<T1, TProperty?>> firstProperty,
+        Expression<Func<T2, TProperty?>> secondProperty
     )
     {
         CheckInstances();
+        CheckProperties(firstProperty, secondProperty);
 
         if (!IsValid)
             return this;
-        if (firstProperty is null)
-            throw new ArgumentNullException(nameof(firstProperty));
-        if (secondProperty is null)
-            throw new ArgumentNullException(nameof(secondProperty));
 
-        TProperty prop1Value = firstProperty
+        TProperty? prop1Value = firstProperty
             .Compile().Invoke(_firstInstance);
-        TProperty prop2Value = secondProperty
+        TProperty? prop2Value = secondProperty
             .Compile().Invoke(_secondInstance);
 
-        IsValid = prop1Value.Equals(prop2Value);
+        if (!ArePropertiesNullOrHasValue(prop1Value, prop2Value))
+        {
+            IsValid = false;
+            return this;
+        }
+
+        if (prop1Value is null && prop2Value is null)
+            return this;
+
+        IsValid = prop1Value!.Equals(prop2Value);
 
         return this;
     }
@@ -63,35 +69,84 @@ public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
             );
     }
 
+    private static void CheckProperties<TProperty>(
+        Expression<Func<T1, TProperty?>> firstProperty, 
+        Expression<Func<T2, TProperty?>> secondProperty)
+    {
+        if (firstProperty is null)
+            throw new ArgumentNullException($"{nameof(firstProperty)} cannot be null");
+        if (secondProperty is null)
+            throw new ArgumentNullException($"{nameof(secondProperty)} cannot be null");
+    }
+
+    private static bool ArePropertiesNullOrHasValue<TProperty>(
+        TProperty? firstProp, TProperty? secondProp)
+    {
+        if (firstProp is null && secondProp is not null ||
+            firstProp is not null && secondProp is null)
+            return false;
+
+        return true;
+    }
+
     public ICustomComparer<T1, T2> AreEqualIEnumerable<TProperty>(
         Expression<Func<T1, IEnumerable<TProperty>>> firstProperty,
         Expression<Func<T2, IEnumerable<TProperty>>> secondProperty
     )
     {
         CheckInstances();
+        CheckProperties(firstProperty, secondProperty);
 
         if (!IsValid)
             return this;
-        if (firstProperty is null)
-            throw new ArgumentException("First property cannot be null");
-        if (secondProperty is null)
-            throw new ArgumentException("Second property cannot be null");
 
-        TProperty[] prop1Value = firstProperty
-            .Compile().Invoke(_firstInstance).ToArray();
-        TProperty[] prop2Value = secondProperty
-            .Compile().Invoke(_secondInstance).ToArray();
+        IEnumerable<TProperty> prop1Value = firstProperty
+            .Compile().Invoke(_firstInstance);
+        IEnumerable<TProperty> prop2Value = secondProperty
+            .Compile().Invoke(_secondInstance);
 
-        if (prop1Value.Length != prop2Value.Length)
+        if (!ArePropertiesNullOrHasValue(prop1Value, prop2Value))
+        {
+            IsValid = false;
+            return this;
+        }
+        else if (prop1Value is null && prop2Value is null)
+            return this;
+
+        TProperty[] prop1ValueArray = prop1Value!.ToArray();
+        TProperty[] prop2ValueArray = prop2Value!.ToArray();
+
+        if (prop1ValueArray.Length != prop2ValueArray.Length)
             IsValid = false;
 
-        for (int i = 0; i < prop1Value.Length; i++)
-            if (!prop1Value[i].Equals(prop2Value[i]))
+        for (int i = 0; i < prop1ValueArray.Length; i++)
+            if (!prop1ValueArray[i]!.Equals(prop2ValueArray[i]))
             {
                 IsValid = false;
                 break;
             }
 
         return this;
+    }
+
+    private static bool ArePropertiesNullOrHasValue<TProperty>(
+        IEnumerable<TProperty> firstProp, 
+        IEnumerable<TProperty> secondProp)
+    {
+        if (firstProp is null && secondProp is not null ||
+            firstProp is not null && secondProp is null)
+            return false;
+
+        return true;
+    }
+
+    private static void CheckProperties<TProperty>(
+        Expression<Func<T1, IEnumerable<TProperty>>> firstProperty,
+        Expression<Func<T2, IEnumerable<TProperty>>> secondProperty)
+    {
+        if (firstProperty is null)
+            throw new ArgumentNullException($"{nameof(firstProperty)} cannot be null");
+        if (secondProperty is null)
+            throw new ArgumentNullException($"{nameof(secondProperty)} cannot be null");
     }
 }
