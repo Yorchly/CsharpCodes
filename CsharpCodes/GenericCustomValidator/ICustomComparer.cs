@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace GenericCustomComparer;
+﻿namespace GenericCustomComparer;
 
 public interface ICustomComparer<T1, T2>
 {

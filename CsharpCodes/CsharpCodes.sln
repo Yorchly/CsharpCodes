@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericCustomComparer", "GenericCustomValidator\GenericCustomComparer.csproj", "{040B231B-BEE8-4438-98B7-A768391E1973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsharpCodes.GenericCustomComparer", "GenericCustomValidator\CsharpCodes.GenericCustomComparer.csproj", "{040B231B-BEE8-4438-98B7-A768391E1973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCustomComparerTests", "GenericCustomComparerTests\GenericCustomComparerTests.csproj", "{97A3A53D-30F5-4D53-8E8D-1CA45116C0D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsharpCodes.Tests", "GenericCustomComparerTests\CsharpCodes.Tests.csproj", "{9070EAA9-DFD4-4DD2-88C2-F4D9E8501B4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{040B231B-BEE8-4438-98B7-A768391E1973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{040B231B-BEE8-4438-98B7-A768391E1973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{040B231B-BEE8-4438-98B7-A768391E1973}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97A3A53D-30F5-4D53-8E8D-1CA45116C0D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97A3A53D-30F5-4D53-8E8D-1CA45116C0D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97A3A53D-30F5-4D53-8E8D-1CA45116C0D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97A3A53D-30F5-4D53-8E8D-1CA45116C0D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9070EAA9-DFD4-4DD2-88C2-F4D9E8501B4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9070EAA9-DFD4-4DD2-88C2-F4D9E8501B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9070EAA9-DFD4-4DD2-88C2-F4D9E8501B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9070EAA9-DFD4-4DD2-88C2-F4D9E8501B4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

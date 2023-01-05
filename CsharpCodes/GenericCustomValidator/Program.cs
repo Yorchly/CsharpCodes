@@ -1,8 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using GenericCustomComparer;
-
-var test1 = new Test1
+﻿var test1 = new Test1
 {
     Prop1 = 1,
     Prop2 = "Test",
@@ -25,19 +21,3 @@ customComparer
     .AreEqualIEnumerable(t1 => t1.Prop3, t2 => t2.Prop3);
 
 Console.WriteLine(customComparer.IsValid);
-
-public class Test1
-{
-    public int Prop1 { get; set; }
-    public string Prop2 { get; set; }
-    public List<int> Prop3 { get; set; }
-}
-
-public class Test2
-{
-    public int Prop1 { get; set; }
-    public string Prop2 { get; set; }
-    public List<int> Prop3 { get; set; }
-}
-
-

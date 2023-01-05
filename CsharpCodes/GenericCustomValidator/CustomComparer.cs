@@ -1,23 +1,26 @@
-﻿using System.Linq.Expressions;
-
-namespace GenericCustomComparer;
+﻿namespace GenericCustomComparer;
 
 public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
 {
-    public bool IsValid 
-    { 
+    public bool IsValid
+    {
         get
         {
             CheckInstances();
 
             return _isValid;
         }
-        private set => _isValid = value; 
+        private set => _isValid = value;
     }
 
     private T1 _firstInstance;
     private T2 _secondInstance;
     private bool _isValid = true;
+
+    public CustomComparer() { }
+
+    public CustomComparer(T1 firstInstance, T2 secondInstance) =>
+        SetInstances(firstInstance, secondInstance);
 
     public void SetInstances(T1 firstInstance, T2 secondInstance)
     {
@@ -70,7 +73,7 @@ public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
     }
 
     private static void CheckProperties<TProperty>(
-        Expression<Func<T1, TProperty?>> firstProperty, 
+        Expression<Func<T1, TProperty?>> firstProperty,
         Expression<Func<T2, TProperty?>> secondProperty)
     {
         if (firstProperty is null)
@@ -117,7 +120,10 @@ public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
         TProperty[] prop2ValueArray = prop2Value!.ToArray();
 
         if (prop1ValueArray.Length != prop2ValueArray.Length)
+        {
             IsValid = false;
+            return this;
+        }
 
         for (int i = 0; i < prop1ValueArray.Length; i++)
             if (!prop1ValueArray[i]!.Equals(prop2ValueArray[i]))
@@ -130,7 +136,7 @@ public class CustomComparer<T1, T2> : ICustomComparer<T1, T2>
     }
 
     private static bool ArePropertiesNullOrHasValue<TProperty>(
-        IEnumerable<TProperty> firstProp, 
+        IEnumerable<TProperty> firstProp,
         IEnumerable<TProperty> secondProp)
     {
         if (firstProp is null && secondProp is not null ||
