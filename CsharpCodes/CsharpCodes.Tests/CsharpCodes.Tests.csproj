@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GenericCustomValidator\CsharpCodes.GenericCustomComparer.csproj" />
+    <ProjectReference Include="..\CsharpCodes.CustomComparer\CsharpCodes.GenericCustomComparer.csproj" />
   </ItemGroup>
 
 </Project>

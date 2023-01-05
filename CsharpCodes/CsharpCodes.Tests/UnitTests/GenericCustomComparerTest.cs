@@ -1,6 +1,6 @@
 ﻿namespace CsharpCodes.Tests.UnitTests;
 
-public class GenericCustomCompareTest
+public class GenericCustomComparerTest
 {
     private ICustomComparer<Test1, Test2> _comparer;
 
